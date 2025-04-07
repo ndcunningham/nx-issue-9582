@@ -1,0 +1,83 @@
+{
+  "name": "acme",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/acme/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/acme",
+        "index": "apps/acme/src/index.html",
+        "baseHref": "/",
+        "main": "apps/acme/src/main.tsx",
+        "tsConfig": "apps/acme/tsconfig.app.json",
+        "assets": ["apps/acme/src/favicon.ico", "apps/acme/src/assets"],
+        "styles": ["apps/acme/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "apps/acme/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/acme/src/environments/environment.ts",
+              "with": "apps/acme/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "acme:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "acme:build:development"
+        },
+        "production": {
+          "buildTarget": "acme:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "acme:build",
+        "spa": true
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/acme/jest.config.ts"
+      }
+    }
+  }
+}
